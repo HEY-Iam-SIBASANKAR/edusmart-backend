@@ -37,13 +37,13 @@ export const Register = async(req ,res)=>{
         const token = await jwt.sign({userId:newUser._id},ENV.JWT_SECRET )
 
         if(newUser.email === ENV.ADMIN){
-            return res.status(201).cookie("token", token, {maxAge:1*24*60*60*1000, httpOnly:true, secure:false, sameSite:"lax"}).json({
+            return res.status(201).cookie("token", token, {maxAge:1*24*60*60*1000, httpOnly:true, secure:process.env.NODE_ENV === "production", sameSite:process.env.NODE_ENV === "production" ? "none" : "lax"}).json({
                 message:`welcome back admin ${newUser.fullName}`,
                 
             })
         }
 
-        return res.status(201).cookie("token", token, {maxAge:1*24*60*60*1000, httpOnly:true, secure:false, sameSite:"lax"}).json({
+        return res.status(201).cookie("token", token, {maxAge:1*24*60*60*1000, httpOnly:true, secure:process.env.NODE_ENV === "production", sameSite:process.env.NODE_ENV === "production" ? "none" : "lax"}).json({
                 message:`welcome back  ${newUser.fullName}`
             })
 
@@ -90,9 +90,9 @@ export const Login = async(req,res)=>{
         res.cookie("token",token,{
             maxAge:1*24*60*60*1000,
             httpOnly:true,
-            secure:false,
-            sameSite:"lax"
-        })
+            secure:process.env.NODE_ENV === "production",
+            sameSite:process.env.NODE_ENV === "production" ? "none" : "lax"
+            })
 
         if(user.admin){
             return res.status(201).json({
